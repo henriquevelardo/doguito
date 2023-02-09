@@ -1,6 +1,7 @@
 //VALIDAÇÃO DA DATA DE NASCIMENTO PARA CADA INPUT
 export function valida(input){
     const tipoDeInput = input.dataset.tipo
+    
 
     if(validadores[tipoDeInput]){
         validadores[tipoDeInput](input)
@@ -41,8 +42,12 @@ const mensagemErro = {
         customError: "É necessário ser maior de 18 anos para se cadastrar!"
     },
     cpf: {
-        valueMissing: "O campo não pode estar vazio",
-        customError: "O CPF digitado não é válido"
+        valueMissing: "O campo não pode estar vazio.",
+        customError: "O CPF digitado não é válido."
+    },
+    cep: {
+        valueMissing: "O campo não pode estar vazio.",
+        patternMismatch: "O CEP digitado não é válido."
     }
 
 }
@@ -87,8 +92,8 @@ function validaCpf(input){
     const cpfFormatado = input.value.replace(/\D/g, "")
     let mensagem = ""
 
-    if(!checaCpfRepetido(cpfFormatado)){
-        mensagem = "O CPF digitado não é válido."
+    if(!checaCpfRepetido(cpfFormatado) || !checaEstruturaCPF(cpfFormatado)){
+        mensagem = mostraMensagemDeErro("cpf", input)
     }
 
     input.setCustomValidity(mensagem)
@@ -119,3 +124,46 @@ function checaCpfRepetido(cpf){
     return cpfValido
 
 }
+
+function checaEstruturaCPF(cpf){
+    const multiplicador = 10
+
+    return checaDigitoVerificador(cpf, multiplicador)
+}
+
+function checaDigitoVerificador(cpf, multiplicador){
+    //se multiplicador for maior ou igual a 12, digitos verificadores corretos, 
+    //pois multiplicador pega a posição 10 e 11 do CPF apenas
+    if(multiplicador >= 12){
+        return true
+    }
+
+    let multiplicadorInicial = multiplicador
+    let soma = 0
+    const cpfSemDigitos = cpf.substr(0, multiplicador - 1).split('')
+    const digitoVerificador = cpf.charAt(multiplicador - 1)
+    for(let contador = 0; multiplicadorInicial > 1; multiplicadorInicial--){
+        soma = soma + cpfSemDigitos[contador] * multiplicadorInicial
+        contador++
+    }
+
+    if(digitoVerificador == confirmaDigito(soma)){
+        return checaDigitoVerificador(cpf, multiplicador + 1)
+    }
+
+    return false
+}
+
+function confirmaDigito(soma){
+    return 11 - (soma % 11)
+}
+
+
+
+
+
+//Matemática do CPF
+//cpf = 123456789 - 09
+//let soma = (10 * 1) + (9 * 2) + (8 * 3) ... (2 * 9)
+//let digitoVerificador = 11 - (soma % 11)
+// segundo digito é igual, porém começa com 11
