@@ -48,6 +48,15 @@ const mensagemErro = {
     cep: {
         valueMissing: "O campo não pode estar vazio.",
         patternMismatch: "O CEP digitado não é válido."
+    },
+    logradouro: {
+        valueMissing: "O campo não pode estar vazio.",
+    },
+    cidade: {
+        valueMissing: "O campo não pode estar vazio.",
+    },
+    estado: {
+        valueMissing: "O campo não pode estar vazio.",
     }
 
 }
@@ -157,6 +166,12 @@ function checaDigitoVerificador(cpf, multiplicador){
 function confirmaDigito(soma){
     return 11 - (soma % 11)
 }
+
+
+
+
+
+
 
 
 
